@@ -1,0 +1,11 @@
+{
+  "name": "@fyp/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "eslint-config-prettier": "^9.1.0"
+  },
+  "dependencies": {
+    "@vercel/style-guide": "^5.1.0"
+  }
+}

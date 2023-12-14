@@ -1,0 +1,25 @@
+# package dependencies
+node_modules
+
+# environment-specific files
+.env
+.env.local
+.env.*.local
+
+# built output or artifacts
+dist
+build
+out
+.next
+
+# logs or debugging outputs
+*.log
+*.log*
+npm-debug.log*
+
+# editor-specific or generated files
+.vscode/
+.DS_Store
+
+# turbo files
+.turbo
