@@ -1,22 +1,12 @@
-import { auth, signOut } from '@/auth';
+import { ProfileCard } from '@/components/home/profile-card';
 
-const HomePage = async () => {
-  const session = await auth();
-
+const Home = () => {
   return (
-    <div className='relative'>
-      {JSON.stringify(session)}
-      <form
-        action={async () => {
-          'use server';
-
-          await signOut();
-        }}
-      >
-        <button type='submit'>Sign out</button>
-      </form>
+    <div className='container flex justify-between items-start'>
+      <ProfileCard />
+      idk what to even put here anymore
     </div>
   );
 };
 
-export default HomePage;
+export default Home;

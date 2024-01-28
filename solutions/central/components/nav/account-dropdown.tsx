@@ -1,15 +1,15 @@
 import Link from 'next/link';
 
-import { UserIcon } from '@/components/user-icon';
-import { ExitIcon } from '@radix-ui/react-icons';
-import { LogoutButton } from '@/components/nav';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+import { UserIcon } from '@/components/user-icon';
+import { ExitIcon } from '@radix-ui/react-icons';
+import { LogoutButton } from '@/components/nav';
 
 export const AccountDropdown = () => {
   return (
@@ -19,12 +19,12 @@ export const AccountDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-40' align='end'>
         <DropdownMenuItem>
-          <Link href='/profile'>Profile</Link>
+          <Link href='/profile'>profile</Link>
         </DropdownMenuItem>
         <LogoutButton>
           <DropdownMenuItem>
             <ExitIcon className='mr-2 w-4 h-4' />
-            Logout
+            logout
           </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>
