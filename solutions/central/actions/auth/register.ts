@@ -6,10 +6,11 @@ import * as z from 'zod';
 
 import { RegisterSchema } from '@/schemas';
 
-import { getUserByEmail, insertUser } from '@/lib/dao/user';
-
-import { PrismaClient } from '@prisma/client';
-import { db } from '@/lib/db';
+import {
+  getUserByEmail,
+  createUser,
+  createProfileForUser,
+} from '@/lib/dao/user';
 
 const SALT_ROUNDS = 10;
 
@@ -24,32 +25,23 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-  // check if user already exists
   const userExists = await getUserByEmail(email);
 
-  // if exists, cannot create a new user
   if (userExists) {
     return { error: 'email is already in use' };
   }
 
-  await insertUser({
+  await createUser({
     email: email,
-    username: username,
+    name: username,
     password: hashedPassword,
   });
 
   const user = await getUserByEmail(email);
 
-  if (!user) return 'something weng wrong?';
-  await db.profile.create({
-    data: {
-      user: {
-        connect: {
-          id: user.id,
-        },
-      },
-    },
-  });
+  if (!user) return { error: 'something weng wrong' };
 
-  return { success: 'user created' };
+  await createProfileForUser(user.id);
+
+  return { success: 'user has been created' };
 };

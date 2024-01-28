@@ -2,6 +2,8 @@ import { Role } from '@prisma/client';
 import { DefaultSession } from 'next-auth';
 
 export type AppUser = DefaultSession['user'] & {
+  name: string;
+  username: string;
   role: Role;
 };
 
