@@ -1,13 +1,13 @@
-import { LoginForm } from '@/components/auth';
+import type { Metadata } from 'next';
 
-import { Metadata } from 'next';
+import { LoginForm } from '@/components/auth';
 
 export const metadata: Metadata = {
   title: 'login',
   description: 'sign into your central account.',
 };
 
-const LoginPage = () => {
+const Login = () => {
   return (
     <div className='flex flex-col h-full'>
       <div className='relative inset-x-0 bg-amber-300 pb-2/3'>
@@ -26,4 +26,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

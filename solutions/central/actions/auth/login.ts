@@ -4,11 +4,11 @@ import * as z from 'zod';
 
 import { LoginSchema } from '@/schemas';
 
-import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
-import { getUserByEmail } from '@/lib/dao/user';
 import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
-import { createDefaultLevels } from '@/scripts/create-default-levels';
+
+import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import { getUserByEmail } from '@/lib/dao/user';
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const validateFields = LoginSchema.safeParse(values);
@@ -21,7 +21,9 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
   const user = await getUserByEmail(email);
 
-  console.log('user', user);
+  if (!user || !user.email || !user.password) {
+    return { error: 'check your credentials are correct.' };
+  }
 
   try {
     await signIn('credentials', {
@@ -41,5 +43,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
     throw error;
   }
-  return { success: 'email has been sent' };
+
+  return { success: 'login success' };
 };
