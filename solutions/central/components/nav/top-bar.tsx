@@ -40,11 +40,10 @@ export const Topbar = () => {
                     pathname?.startsWith(route.path)
                       ? 'text-foreground'
                       : 'text-foreground/60',
+                    navigationMenuTriggerStyle(),
                   )}
                 >
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    {route.name}
-                  </NavigationMenuLink>
+                  {route.name}
                 </Link>
               </NavigationMenuItem>
             ))}

@@ -1,4 +1,4 @@
-const Central = async () => {
+const Central = () => {
   return <div>central</div>;
 };
 

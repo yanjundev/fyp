@@ -1,7 +1,6 @@
 import { db } from '@/lib/db';
 
 import { User as UserType } from '@/lib/types';
-import { getThresholdByLevel } from './level';
 
 export const getUserById = async (id: string) => {
   try {
@@ -22,18 +21,32 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-export const insertUser = async ({ username, email, password }: UserType) => {
+export const createUser = async ({ name, email, password }: UserType) => {
   try {
     await db.user.create({
       data: {
         email,
-        username,
+        name,
         password,
       },
     });
-  } catch (error) {
-    console.log('here', error);
+  } catch {
+    return null;
+  }
+};
 
+export const createProfileForUser = async (userId: string) => {
+  try {
+    await db.profile.create({
+      data: {
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+  } catch {
     return null;
   }
 };

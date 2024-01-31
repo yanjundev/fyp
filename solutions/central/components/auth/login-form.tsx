@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/form';
 import { CardWrapper } from '@/components/auth';
 import { FormError } from '@/components/form-error';
-import { FormSuccess } from '@/components/form-success';
 
 const content = {
   type: 'login',
@@ -46,7 +45,6 @@ export const LoginForm = () => {
       : '';
 
   const [error, setError] = useState<string | undefined>('');
-  const [success, setSuccesss] = useState<string | undefined>('');
 
   const [isPending, startTransition] = useTransition();
 
@@ -60,12 +58,10 @@ export const LoginForm = () => {
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError('');
-    setSuccesss('');
 
     startTransition(() => {
       login(values).then((data) => {
         setError(data.error);
-        setSuccesss(data.success);
       });
     });
   };
@@ -110,7 +106,6 @@ export const LoginForm = () => {
           />
 
           <FormError message={error || urlError} />
-          <FormSuccess message={success} />
 
           <Button type='submit' disabled={isPending} className='w-full'>
             {content.button}
