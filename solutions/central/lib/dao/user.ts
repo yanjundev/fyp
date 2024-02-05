@@ -35,16 +35,22 @@ export const createUser = async ({ name, email, password }: UserType) => {
   }
 };
 
+/**
+ * creates a profile if it doesn't exist for the user
+ * @param userId the user id
+ */
 export const createProfileForUser = async (userId: string) => {
   try {
-    await db.profile.create({
-      data: {
+    await db.profile.upsert({
+      where: { userId },
+      create: {
         user: {
           connect: {
             id: userId,
           },
         },
       },
+      update: {},
     });
   } catch {
     return null;

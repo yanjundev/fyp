@@ -16,38 +16,19 @@ export const checkIn = async () => {
 
         if (newExp) {
           if (newExp >= Number(profile.threshold)) {
-            const leftover = await levelUp(profile);
-            return leftover;
+            await levelUp(profile);
           }
-
-          return {
-            level: profile.level,
-            exp: newExp.toString(),
-            threshold: profile.threshold,
-          };
         }
       }
-
-      return {
-        level: profile.level,
-        exp: profile.experience,
-        threshold: profile.threshold,
-      };
     }
   } catch (error) {
     throw error;
   }
-
-  return {
-    level: '1',
-    exp: '0',
-    threshold: '100',
-  };
 };
 
 export const checkInStatus = async () => {
   try {
-    const status = getHasCheckedIn();
+    const status = await getHasCheckedIn();
 
     return status;
   } catch (error) {

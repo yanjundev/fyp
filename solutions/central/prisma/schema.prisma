@@ -64,13 +64,10 @@ model Profile {
 model Follow {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   //
-  name        String?
-  username    String?
-  //
-  profileId   String  @unique @db.ObjectId
+  profileId   String  @db.ObjectId
   profile     Profile @relation(name: "follower", fields: [profileId], references: [id])
   //
-  followingId String  @unique @db.ObjectId
+  followingId String  @db.ObjectId
   following   Profile @relation(name: "following", fields: [followingId], references: [id])
 }
 

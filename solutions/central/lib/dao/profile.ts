@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/session';
+import { getUserById } from '@/lib/dao/user';
 
 /**
  * returns profile with additional info (level threshold)
@@ -18,7 +19,83 @@ export const getProfile = async () => {
     });
 
     if (profile && level) {
-      return { ...profile, threshold: level.threshold };
+      return { ...user, ...profile, threshold: level.threshold };
+    }
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * returns the user profile
+ * @param id profile id
+ */
+export const getProfileById = async (id: string) => {
+  try {
+    const profile = await db.profile.findUnique({ where: { id } });
+
+    return profile;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * returns the user profile
+ * @param userId id of profile user
+ */
+export const getProfileByUserId = async (userId: string) => {
+  try {
+    const profile = await db.profile.findUnique({ where: { userId } });
+
+    return profile;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * returns the profile id
+ */
+export const getProfileId = async () => {
+  try {
+    const user = await getCurrentUser();
+
+    const profile = await db.profile.findUnique({
+      where: { userId: user?.id },
+    });
+
+    return profile?.id;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ *  returns all profiles excluding self and following
+ */
+export const getProfiles = async () => {
+  try {
+    const profileId = await getProfileId();
+
+    if (profileId) {
+      const excludeIds = [{ id: profileId }];
+
+      const following = await getFollowing();
+
+      if (following) {
+        following.map((f) => excludeIds.push({ id: f.profileId }));
+      }
+
+      const profiles = await db.profile.findMany({
+        where: {
+          NOT: excludeIds,
+        },
+        include: { user: true },
+        take: 10,
+      });
+
+      return profiles;
     }
   } catch {
     return null;
@@ -48,31 +125,109 @@ export const getFollowsInfoByUserId = async (id: string) => {
 };
 
 /**
- * create a follow
+ * returns all the followers of the user
+ */
+export const getFollowers = async () => {
+  try {
+    const profileId = await getProfileId();
+
+    if (profileId) {
+      const follows = await db.follow.findMany({
+        where: { followingId: profileId },
+        select: { profile: true },
+      });
+
+      const followers = Promise.all(
+        follows.map(async (follow) => {
+          const following = follow.profile;
+
+          const user = await getUserById(following.userId);
+
+          if (user) {
+            return {
+              image: user.image,
+              profileId: following.id,
+              name: user.name,
+              username: user.username,
+            };
+          }
+        }),
+      );
+
+      return followers;
+    }
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * returns all the user's followed accounts
+ */
+export const getFollowing = async () => {
+  try {
+    const profileId = await getProfileId();
+
+    if (profileId) {
+      const follows = await db.follow.findMany({
+        where: { profileId },
+        select: { following: true },
+      });
+
+      const followed = Promise.all(
+        follows.map(async (follow) => {
+          const following = follow.following;
+
+          const user = await getUserById(following.userId);
+
+          if (user) {
+            return {
+              image: user.image,
+              profileId: following.id,
+              name: user.name,
+              username: user.username,
+            };
+          }
+        }),
+      );
+
+      return followed;
+    }
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * create/delete followers
  * @param followerId profile id of account of the follower
  * @param followedId profile id of account being followed
  */
 export const updateFollowing = async (
   followerId: string,
   followedId: string,
+  following?: boolean,
 ) => {
   try {
-    const following = await db.user.findFirst({
-      where: { profile: { id: followedId } },
-    });
-
-    await db.follow.create({
-      data: {
-        name: following?.name,
-        username: following?.username,
-        profile: {
-          connect: {
-            id: followerId,
+    if (following) {
+      await db.follow.create({
+        data: {
+          profile: {
+            connect: {
+              id: followerId,
+            },
           },
+          following: { connect: { id: followedId } },
         },
-        following: { connect: { id: followedId } },
-      },
-    });
+      });
+    } else {
+      await db.follow.deleteMany({
+        where: {
+          profileId: followerId,
+          followingId: followedId,
+        },
+      });
+    }
   } catch {
     return null;
   }

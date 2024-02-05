@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 
 import { TbHexagonFilled } from 'react-icons/tb';
 
-import { getFollowing, getLevelInfo } from '@/actions/user/profile';
+import { getLevelInfo } from '@/actions/user/profile';
 
 import {
   Card,
@@ -24,27 +24,19 @@ export const ProfileCard = () => {
   const [exp, setExp] = useState('');
   const [threshold, setThreshold] = useState('');
 
-  const [followers, setFollowers] = useState(0);
-  const [following, setFollowing] = useState(0);
+  const updateLevelInfo = () => {
+    getLevelInfo().then((info) => {
+      if (info) {
+        setName(info.username || info.name);
+        setLevel(info.level);
+        setExp(info.experience);
+        setThreshold(info.threshold);
+      }
+    });
+  };
 
   useEffect(() => {
-    startTransition(() => {
-      getLevelInfo().then((info) => {
-        if (info) {
-          setName(info.username || info.name);
-          setLevel(info.level);
-          setExp(info.experience);
-          setThreshold(info.threshold);
-        }
-      });
-
-      getFollowing().then((info) => {
-        if (info) {
-          setFollowers(info.followers);
-          setFollowing(info.following);
-        }
-      });
-    });
+    startTransition(() => updateLevelInfo());
   }, []);
 
   return (
@@ -75,7 +67,7 @@ export const ProfileCard = () => {
               <Skeleton className='h-4 w-[200px]' />
             </div>
           ) : (
-            <SocialInfo followers={followers} following={following} />
+            <SocialInfo />
           )}
 
           <Separator className='my-8' />
@@ -93,11 +85,7 @@ export const ProfileCard = () => {
           </div>
         </CardContent>
         <CardFooter>
-          <CheckInButton
-            updateLevel={setLevel}
-            updateExp={setExp}
-            updateThreshold={setThreshold}
-          />
+          <CheckInButton updateLevelInfo={updateLevelInfo} />
         </CardFooter>
       </Card>
     </div>

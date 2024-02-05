@@ -2,13 +2,6 @@ import { UserIcon } from '@/components/user-icon';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
-interface UserInfoProps {
-  name: string;
-  level: string;
-  exp: string;
-  threshold: string;
-}
-
 export const UserInfo = ({ name, level, exp, threshold }: UserInfoProps) => {
   return (
     <div className='flex flex-col gap-3'>
@@ -35,3 +28,10 @@ export const UserInfo = ({ name, level, exp, threshold }: UserInfoProps) => {
     </div>
   );
 };
+
+interface UserInfoProps {
+  name: string;
+  level: string;
+  exp: string;
+  threshold: string;
+}
