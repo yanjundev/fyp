@@ -1,6 +1,6 @@
-import { UserIcon } from '@/components/user-icon';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { UserIcon } from '@/components/user-icon';
 
 export const UserInfo = ({ name, level, exp, threshold }: UserInfoProps) => {
   return (

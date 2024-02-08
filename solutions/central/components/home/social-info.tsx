@@ -7,8 +7,7 @@ import { getFollowing } from '@/actions/user/profile';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FollowerList } from '@/components/home/follower-list';
-import { FollowingList } from '@/components/home/following-list';
+import { FollowerList, FollowingList } from '@/components/home';
 
 export const SocialInfo = () => {
   const [isPending, startTransition] = useTransition();

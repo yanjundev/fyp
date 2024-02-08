@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 
 import { fetchFollowing } from '@/actions/user/follow';
 
-import { FollowListItem } from '@/components/home/follow-list-item';
+import { FollowListItem } from '@/components/home';
 
 export const FollowingList = () => {
   const [isPending, startTransition] = useTransition();

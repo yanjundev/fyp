@@ -8,8 +8,8 @@ import {
   removeFollow,
 } from '@/actions/user/follow';
 
-import { ProfileIcon } from '@/components/profile-icon';
 import { Button } from '@/components/ui/button';
+import { ProfileIcon } from '@/components/profile-icon';
 
 export const FollowListItem = (user: FollowListItemProps) => {
   const [isPending, startTransition] = useTransition();
@@ -43,10 +43,12 @@ export const FollowListItem = (user: FollowListItemProps) => {
   };
 
   return (
-    <div className='flex items-center justify-between'>
+    <div className='flex justify-between items-center py-1'>
       <ProfileIcon imageUrl={user.image} />
-      <div>{user.name || user.username}</div>
+      <div className='flex-grow px-3'>{user.name || user.username}</div>
       <Button
+        variant={actionType !== ActionType.FOLLOW ? 'outline' : 'default'}
+        className='w-20'
         disabled={isPending}
         onClick={() => onClickActionTypeAction(actionType)}
       >
