@@ -1,5 +1,5 @@
 import { getProfiles } from '@/lib/dao/profile';
-import { FollowListItem } from '../home/follow-list-item';
+import { FollowListItem } from '@/components/profile-card';
 
 export const NewUserList = async () => {
   // TODO: make this client component

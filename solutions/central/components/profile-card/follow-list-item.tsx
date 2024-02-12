@@ -65,10 +65,10 @@ enum ActionType {
 }
 
 interface FollowListItemProps {
-  image: string;
+  image: string | null;
   profileId: string;
-  name: string;
-  username: string;
+  name: string | null;
+  username: string | null;
   following?: boolean;
   discover?: boolean;
 }

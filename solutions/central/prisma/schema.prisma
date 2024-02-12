@@ -54,11 +54,25 @@ model Profile {
   experience  String    @default("0")
   lastCheckIn DateTime?
   //
+  posts       Post[]
   followers   Follow[]  @relation(name: "following")
   following   Follow[]  @relation(name: "follower")
   //
   badgeIds    String[]  @db.ObjectId
   badges      Badge[]   @relation(fields: [badgeIds], references: [id])
+}
+
+model Post {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  //
+  authorId String   @db.ObjectId
+  author   Profile  @relation(fields: [authorId], references: [id])
+  //
+  title    String
+  body     String
+  tags     String[]
+  public   Boolean
+  postDate DateTime @default(now())
 }
 
 model Follow {
@@ -79,8 +93,8 @@ model Level {
 
 model Badge {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  profiles   Profile[] @relation(fields: [profileIds], references: [id])
   profileIds String[]  @db.ObjectId
+  profiles   Profile[] @relation(fields: [profileIds], references: [id])
 }
 
 enum Role {

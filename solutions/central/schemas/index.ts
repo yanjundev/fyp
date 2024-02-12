@@ -29,3 +29,10 @@ export const RegisterSchema = z.object({
     message: 'minimum 6 characters required',
   }),
 });
+
+export const PostSchema = z.object({
+  title: z.string().min(1, { message: 'title should not be empty' }),
+  body: z.string().min(1, { message: 'the post body is empty' }),
+  tags: z.array(z.string()),
+  isPublic: z.boolean(),
+});

@@ -1,10 +1,11 @@
-import { ProfileCard } from '@/components/home/profile-card';
+import { PostFeed } from '@/components/post/post-feed';
+import { ProfileCard } from '@/components/profile-card/profile-card';
 
 const Home = () => {
   return (
-    <div className='container flex justify-between items-start'>
+    <div className='container flex justify-between items-start space-x-10 w-full'>
       <ProfileCard />
-      idk what to even put here anymore
+      <PostFeed />
     </div>
   );
 };

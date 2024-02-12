@@ -1,4 +1,5 @@
 // components
+import { Toaster } from '@/components/ui/toaster';
 import { Topbar } from '@/components/nav/top-bar';
 
 export default function MainLayout({
@@ -10,6 +11,7 @@ export default function MainLayout({
     <div className='flex flex-col justify-center items-center'>
       <Topbar />
       {children}
+      <Toaster />
     </div>
   );
 }

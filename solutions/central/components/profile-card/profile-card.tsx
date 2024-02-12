@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { UserInfo, SocialInfo, CheckInButton } from '@/components/home';
+import { UserInfo, SocialInfo, CheckInButton } from '@/components/profile-card';
 
 export const ProfileCard = () => {
   const [isPending, startTransition] = useTransition();
@@ -40,15 +40,15 @@ export const ProfileCard = () => {
   }, []);
 
   return (
-    <div className='flex fixed flex-col justify-center mx-auto space-y-5 w-full max-w-sm'>
+    <div className='flex relative flex-col justify-center mx-auto space-y-5 w-full max-w-sm'>
       <Card>
         <CardHeader>
           {isPending ? (
             <div className='flex items-center space-x-4'>
-              <Skeleton className='h-20 w-20 rounded-full' />
+              <Skeleton className='w-20 h-20 rounded-full' />
               <div className='space-y-2'>
-                <Skeleton className='h-5 w-56' />
-                <Skeleton className='h-5 w-56' />
+                <Skeleton className='w-56 h-5' />
+                <Skeleton className='w-56 h-5' />
               </div>
             </div>
           ) : (

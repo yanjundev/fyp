@@ -5,15 +5,15 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export const ProfileIcon = ({ imageUrl }: ProfileIconProps) => {
   return (
-    <Avatar className={`w-10 h-10`}>
+    <Avatar className={`w-7 h-7`}>
       <AvatarImage src={imageUrl || ''} />
       <AvatarFallback className='bg-zinc-500'>
-        <PersonIcon className={`text-white h-6 w-6`} />
+        <PersonIcon className={`text-white h-5 w-5`} />
       </AvatarFallback>
     </Avatar>
   );
 };
 
 interface ProfileIconProps {
-  imageUrl: string;
+  imageUrl: string | null;
 }

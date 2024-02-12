@@ -1,17 +1,19 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
+import Link from 'next/link';
 
 import { getFollowing } from '@/actions/user/profile';
 
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FollowerList, FollowingList } from '@/components/home';
+import { FollowerList, FollowingList } from '@/components/profile-card';
 
 export const SocialInfo = () => {
   const [isPending, startTransition] = useTransition();
 
+  const [postCount, setPostCount] = useState(0);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
@@ -41,6 +43,10 @@ export const SocialInfo = () => {
   ) : (
     <div className='flex justify-evenly'>
       <Dialog>
+        <Link className='flex flex-col items-center' href='/posts'>
+          <span>posts</span>
+          <span>{postCount}</span>
+        </Link>
         <DialogTrigger
           className='flex flex-col items-center'
           onClick={() => onFollowClick(Option.FOLLOWER)}

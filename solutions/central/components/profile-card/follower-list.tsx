@@ -2,18 +2,18 @@
 
 import { useEffect, useState, useTransition } from 'react';
 
-import { fetchFollowing } from '@/actions/user/follow';
+import { fetchFollowers } from '@/actions/user/follow';
 
-import { FollowListItem } from '@/components/home';
+import { FollowListItem } from '@/components/profile-card';
 
-export const FollowingList = () => {
+export const FollowerList = () => {
   const [isPending, startTransition] = useTransition();
 
-  const [following, setFollowing] = useState([{}]);
+  const [followers, setFollowers] = useState([{}]);
 
   useEffect(() => {
     startTransition(() =>
-      fetchFollowing().then((following) => setFollowing(following)),
+      fetchFollowers().then((follower) => setFollowers(follower || [{}])),
     );
   }, []);
 
@@ -21,11 +21,11 @@ export const FollowingList = () => {
     <>
       {isPending
         ? 'loading...'
-        : following.length === 0
-          ? 'no following'
-          : following.map((follower, n) => {
+        : followers.length === 0
+          ? 'no followers'
+          : followers.map((follower, n) => {
               const props = {
-                following: true,
+                following: false,
                 ...follower,
               };
               return <FollowListItem key={n} {...props} />;
