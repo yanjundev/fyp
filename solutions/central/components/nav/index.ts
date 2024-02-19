@@ -1,6 +1,6 @@
 export { AccountDropdown } from './account-dropdown';
 export { BellDropdown } from './bell-dropdown';
-export { CreateButton } from './create-post';
+export { CreateDropdown } from './create-dropdown';
 export { LogoutButton } from './logout-button';
 
 export { Topbar } from './top-bar';

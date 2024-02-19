@@ -17,19 +17,15 @@ export const FollowingList = () => {
     );
   }, []);
 
-  return (
-    <>
-      {isPending
-        ? 'loading...'
-        : following.length === 0
-          ? 'no following'
-          : following.map((follower, n) => {
-              const props = {
-                following: true,
-                ...follower,
-              };
-              return <FollowListItem key={n} {...props} />;
-            })}
-    </>
-  );
+  return isPending
+    ? 'loading...'
+    : following.length === 0
+      ? 'no following'
+      : following.map((follower, n) => {
+          const props = {
+            following: true,
+            ...follower,
+          };
+          return <FollowListItem key={n} {...props} />;
+        });
 };

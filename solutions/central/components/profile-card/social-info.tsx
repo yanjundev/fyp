@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FollowerList, FollowingList } from '@/components/profile-card';
+import { getProfilePostCount } from '@/actions/user/posts';
 
 export const SocialInfo = () => {
   const [isPending, startTransition] = useTransition();
@@ -31,8 +32,16 @@ export const SocialInfo = () => {
       }
     });
 
+  const postInfo = () =>
+    getProfilePostCount().then((n) => {
+      if (n) setPostCount(n);
+    });
+
   useEffect(() => {
-    startTransition(() => followInfo());
+    startTransition(() => {
+      followInfo();
+      postInfo();
+    });
   }, []);
 
   return isPending ? (

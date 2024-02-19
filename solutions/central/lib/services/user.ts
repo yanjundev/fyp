@@ -68,14 +68,12 @@ export const dailyCheckIn = async (id: string, experience: string) => {
   }
 };
 
-export const levelUp = async (profile: profile) => {
+export const levelUp = async (profile: profile, exp: number) => {
   try {
     // increment profile level
     const newLevel = (Number(profile.level) + 1).toString();
     // calculate leftover and return
-    const newExp = (
-      Number(profile.threshold) - Number(profile.experience)
-    ).toString();
+    const newExp = (exp - Number(profile.threshold)).toString();
 
     await updateLevelAndExp(profile.id, newLevel, newExp);
   } catch {

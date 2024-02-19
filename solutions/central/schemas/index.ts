@@ -35,4 +35,28 @@ export const PostSchema = z.object({
   body: z.string().min(1, { message: 'the post body is empty' }),
   tags: z.array(z.string()),
   isPublic: z.boolean(),
+  planId: z.optional(z.string()),
+});
+
+const NUMBER_REGEX = /^\d*$/;
+
+export const ActivitySchema = z.object({
+  name: z.string().min(1, { message: 'you should name the activity' }),
+  weight: z.optional(
+    z.string().regex(NUMBER_REGEX, { message: 'weight must be a number' }),
+  ),
+  reps: z.optional(
+    z.string().regex(NUMBER_REGEX, { message: 'reps must be a number' }),
+  ),
+  time: z.optional(
+    z.string().regex(NUMBER_REGEX, { message: 'time must be a number' }),
+  ),
+});
+
+export const PlanSchema = z.object({
+  name: z.string().min(1, { message: 'your plan should have a name' }),
+  activities: z
+    .array(ActivitySchema)
+    .nonempty({ message: 'you have no activities :(' }),
+  isPublic: z.boolean(),
 });

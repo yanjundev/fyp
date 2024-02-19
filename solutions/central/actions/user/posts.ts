@@ -3,8 +3,14 @@
 import * as z from 'zod';
 
 import { PostSchema } from '@/schemas';
-import { createPostForUser, getPostsByProfiles } from '@/lib/dao/post';
-import { getProfileId } from '@/lib/dao/profile';
+import {
+  createPostForUser,
+  deletePost,
+  getPostsByProfile,
+  getPostsByProfiles,
+  getPostsCount,
+} from '@/lib/dao/post';
+import { getProfile, getProfileId } from '@/lib/dao/profile';
 import { fetchFollowing } from './follow';
 
 export const createPost = async (values: z.infer<typeof PostSchema>) => {
@@ -14,19 +20,49 @@ export const createPost = async (values: z.infer<typeof PostSchema>) => {
     return { error: 'invalid fields found' };
   }
 
-  const { title, body, tags, isPublic } = validateFields.data;
+  const { title, body, tags, isPublic, planId } = validateFields.data;
   const postDate = new Date();
 
   try {
     const profileId = await getProfileId();
 
     if (profileId) {
-      await createPostForUser(profileId, title, body, tags, postDate, isPublic);
+      await createPostForUser(
+        profileId,
+        title,
+        body,
+        tags,
+        postDate,
+        isPublic,
+        planId,
+      );
     }
   } catch {
     return { error: 'something went wrong' };
   }
   return { success: 'login success' };
+};
+
+export const getProfilePostCount = async () => {
+  try {
+    const count = await getPostsCount();
+
+    if (count) {
+      return count;
+    }
+  } catch {
+    return null;
+  }
+};
+
+export const getProfilePosts = async (id?: string) => {
+  try {
+    const posts = await getPostsByProfile(id);
+
+    return posts;
+  } catch {
+    return null;
+  }
 };
 
 export const getFeedPosts = async () => {
@@ -66,4 +102,10 @@ export const getFeedPosts = async () => {
 
 export const updatePost = async (values: z.infer<typeof PostSchema>) => {};
 
-export const deletePost = async (postId: string) => {};
+export const removePost = async (postId: string) => {
+  try {
+    await deletePost(postId);
+  } catch {
+    return null;
+  }
+};

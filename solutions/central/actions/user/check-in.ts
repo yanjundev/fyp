@@ -16,7 +16,7 @@ export const checkIn = async () => {
 
         if (newExp) {
           if (newExp >= Number(profile.threshold)) {
-            await levelUp(profile);
+            await levelUp(profile, newExp);
           }
         }
       }

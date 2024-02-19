@@ -19,12 +19,14 @@ export const AccountDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-40' align='end'>
         <DropdownMenuItem>
-          <Link href='/profile'>profile</Link>
+          <Link href='/profile' className='text-base'>
+            profile
+          </Link>
         </DropdownMenuItem>
         <LogoutButton>
           <DropdownMenuItem>
-            <ExitIcon className='mr-2 w-4 h-4' />
-            logout
+            <ExitIcon className='mr-2 w-6 h-6' />
+            <p className='text-base'>logout</p>
           </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>
