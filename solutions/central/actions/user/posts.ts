@@ -6,12 +6,30 @@ import { PostSchema } from '@/schemas';
 import {
   createPostForUser,
   deletePost,
-  getPostsByProfile,
-  getPostsByProfiles,
+  getPostById,
   getPostsCount,
+  updatePost,
 } from '@/lib/dao/post';
-import { getProfile, getProfileId } from '@/lib/dao/profile';
-import { fetchFollowing } from './follow';
+import { getProfileId } from '@/lib/dao/profile';
+import { getFeedPosts, getProfilePosts } from '@/lib/services/post';
+import {
+  addLikedPost,
+  findLikedPost,
+  getPostLikes,
+  removeLikedPost,
+} from '@/lib/dao/liked-posts';
+import { addDiscoverPost } from '@/lib/services/suggest/discover';
+import { refreshRecommendedPosts } from '@/lib/services/suggest/recommend';
+
+export const checkPostAuthor = async (authorId: string) => {
+  try {
+    const profileId = await getProfileId();
+
+    return profileId === authorId;
+  } catch {
+    return null;
+  }
+};
 
 export const createPost = async (values: z.infer<typeof PostSchema>) => {
   const validateFields = PostSchema.safeParse(values);
@@ -27,7 +45,7 @@ export const createPost = async (values: z.infer<typeof PostSchema>) => {
     const profileId = await getProfileId();
 
     if (profileId) {
-      await createPostForUser(
+      const post = await createPostForUser(
         profileId,
         title,
         body,
@@ -36,11 +54,14 @@ export const createPost = async (values: z.infer<typeof PostSchema>) => {
         isPublic,
         planId,
       );
+
+      if (post && post.public) await addDiscoverPost(post.id);
     }
+
+    return { success: 'made post' };
   } catch {
     return { error: 'something went wrong' };
   }
-  return { success: 'login success' };
 };
 
 export const getProfilePostCount = async () => {
@@ -55,56 +76,98 @@ export const getProfilePostCount = async () => {
   }
 };
 
-export const getProfilePosts = async (id?: string) => {
+export const getProfilePost = async (postId: string) => {
   try {
-    const posts = await getPostsByProfile(id);
+    const post = await getPostById(postId);
 
-    return posts;
+    return post;
   } catch {
     return null;
   }
 };
 
-export const getFeedPosts = async () => {
+export const profilePosts = async (id?: string) => {
   try {
-    const following = await fetchFollowing();
+    const posts = await getProfilePosts(id);
 
-    if (following) {
-      const existing = following
-        .filter((follow) => follow?.profileId)
-        .map((f) => f!);
+    if (posts) return posts;
 
-      const ids = existing.map((follow) => follow?.profileId!);
+    return [];
+  } catch {
+    return null;
+  }
+};
 
-      const posts = await getPostsByProfiles(ids);
+export const feedPosts = async () => {
+  try {
+    const posts = await getFeedPosts();
 
-      if (posts) {
-        const sorted = posts.map((post) => {
-          const author = existing.find(
-            (follow) => follow.profileId === post.authorId,
-          );
-          return {
-            ...post,
-            author: author
-              ? {
-                  ...author,
-                }
-              : null,
-          };
-        });
-        return sorted;
-      }
+    if (posts) return posts;
+
+    return [];
+  } catch {
+    return null;
+  }
+};
+
+export const editPost = async (
+  id: string,
+  values: z.infer<typeof PostSchema>,
+) => {
+  try {
+    const validateFields = PostSchema.safeParse(values);
+
+    if (!validateFields.success) {
+      return { error: 'invalid fields' };
     }
+
+    const { title, body, tags, isPublic, planId } = values;
+
+    await updatePost(id, title, body, tags, isPublic, planId);
   } catch {
     return null;
   }
 };
-
-export const updatePost = async (values: z.infer<typeof PostSchema>) => {};
 
 export const removePost = async (postId: string) => {
   try {
     await deletePost(postId);
+  } catch {
+    return null;
+  }
+};
+
+export const likePost = async (postId: string) => {
+  try {
+    await addLikedPost(postId);
+    await refreshRecommendedPosts();
+  } catch {
+    return null;
+  }
+};
+
+export const unlikePost = async (postId: string) => {
+  try {
+    await removeLikedPost(postId);
+  } catch {
+    return null;
+  }
+};
+
+export const likingPost = async (postId: string) => {
+  try {
+    const likes = await findLikedPost(postId);
+    return likes;
+  } catch {
+    return null;
+  }
+};
+
+export const postLikes = async (postId: string) => {
+  try {
+    const likes = await getPostLikes(postId);
+
+    return likes?.length;
   } catch {
     return null;
   }

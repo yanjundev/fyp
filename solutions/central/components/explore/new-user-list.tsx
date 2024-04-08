@@ -1,23 +1,33 @@
-import { getProfiles } from '@/lib/dao/profile';
-import { FollowListItem } from '@/components/profile-card';
+'use client';
 
-export const NewUserList = async () => {
-  // TODO: make this client component
-  const users = await getProfiles();
+import { useEffect, useState } from 'react';
+
+import { FollowListItem } from '@/components/profile-card';
+import { discoverUsers } from '@/actions/user/profile';
+
+export const NewUserList = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    discoverUsers().then((data) => setUsers(data));
+  }, []);
 
   return (
-    <div>
-      {users?.map((user, index) => {
-        const profile = {
-          image: user.user.image,
-          profileId: user.id,
-          name: user.user.name,
-          username: user.user.username,
-          discover: true,
-        };
+    <div className='flex flex-col space-y-2'>
+      <h3 className='text-lg font-semibold'>new users</h3>
+      <div>
+        {users?.map((i, index) => {
+          const profile = {
+            image: i.user.image,
+            profileId: i.id,
+            name: i.user.name,
+            username: i.user.username,
+            discover: true,
+          };
 
-        return <FollowListItem key={index} {...profile} />;
-      })}
+          return <FollowListItem key={index} {...profile} />;
+        })}
+      </div>
     </div>
   );
 };

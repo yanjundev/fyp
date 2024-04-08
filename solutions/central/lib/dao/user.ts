@@ -21,6 +21,17 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
+export const getUserByProfile = async (profileId: string) => {
+  try {
+    const user = await db.user.findFirst({
+      where: { profile: { id: profileId } },
+    });
+
+    return user;
+  } catch {
+    return null;
+  }
+};
 export const createUser = async ({ name, email, password }: UserType) => {
   try {
     await db.user.create({
@@ -30,7 +41,9 @@ export const createUser = async ({ name, email, password }: UserType) => {
         password,
       },
     });
-  } catch {
+  } catch (error) {
+    console.log('error', error);
+
     return null;
   }
 };

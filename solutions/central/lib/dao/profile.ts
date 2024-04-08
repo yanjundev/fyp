@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/session';
-import { getUserById } from '@/lib/dao/user';
+import { getUserById, getUserByProfile } from '@/lib/dao/user';
 
 /**
  * returns profile with additional info (level threshold)
@@ -66,6 +66,23 @@ export const getProfileId = async () => {
     });
 
     return profile?.id;
+  } catch {
+    return null;
+  }
+};
+
+export const getAuthorProfile = async (id: string) => {
+  try {
+    const user = await getUserByProfile(id);
+
+    if (user) {
+      return {
+        image: user.image,
+        profileId: id,
+        name: user.name,
+        username: user.username,
+      };
+    }
   } catch {
     return null;
   }

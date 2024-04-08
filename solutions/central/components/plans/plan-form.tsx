@@ -26,6 +26,10 @@ import { Dialog, DialogContent } from '../ui/dialog';
 import { ActivityForm } from './activity-form';
 import { Activity } from '@prisma/client';
 import { TrashIcon } from '@radix-ui/react-icons';
+import { isTag } from '@/lib/validate';
+import { Badge } from '../ui/badge';
+import { TagInput } from '../ui/tag-input';
+import { Textarea } from '../ui/textarea';
 
 export const PlanForm = ({
   type,
@@ -35,11 +39,15 @@ export const PlanForm = ({
 }: PlanFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const [addTags, setAddTags] = useState(false);
+
   const form = useForm<z.infer<typeof PlanSchema>>({
     resolver: zodResolver(PlanSchema),
     defaultValues: {
       name: plan.name,
+      description: plan.description ? plan.description : '',
       activities: plan.activities,
+      tags: plan.tags ? plan.tags : [],
       isPublic: plan.isPublic,
     },
     mode: 'onChange',
@@ -49,6 +57,12 @@ export const PlanForm = ({
     name: 'activities',
     control: form.control,
   });
+
+  const onCheckTag = (text: string) => {
+    if (isTag(text)) return true;
+
+    return false;
+  };
 
   const handleAddActivity = (values: z.infer<typeof ActivitySchema>) => {
     append(values);
@@ -69,7 +83,7 @@ export const PlanForm = ({
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-base'>name</FormLabel>
+                <FormLabel>name</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -84,6 +98,53 @@ export const PlanForm = ({
 
           <FormField
             control={form.control}
+            name='description'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder='summarise what your plan is...'
+                    className='h-20'
+                    disabled={submitting}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='tags'
+            render={({ field }) => (
+              <FormItem className='flex flex-row justify-between items-center border-hidden'>
+                {addTags || field.value.length !== 0 ? (
+                  <TagInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    name='tags'
+                    placeHolder='type here to add tags'
+                    isTag={onCheckTag}
+                  />
+                ) : (
+                  <Badge
+                    variant='secondary'
+                    className='rounded-full text-base cursor-pointer'
+                    onClick={() => {
+                      setAddTags(!addTags);
+                    }}
+                  >
+                    #add tags to help people find your plan
+                  </Badge>
+                )}
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name={`activities`}
             render={({ field }) => (
               <FormItem>
@@ -91,21 +152,18 @@ export const PlanForm = ({
 
                 {fields.length !== 0 &&
                   fields.map((activity, index) => (
-                    <div
-                      key={index}
-                      className='flex flex-grow space-y-2 rounded-md border-2 border-solid border-zinc-400'
-                    >
-                      <>
+                    <div key={index} className='flex space-x-1 items-center'>
+                      <div className='flex items-center space-x-1'>
                         <FormField
                           control={form.control}
                           name={`activities.${index}.name`}
                           render={({ field }) => (
-                            <FormItem className='flex items-center'>
+                            <FormItem>
                               <FormControl>
                                 <Input
                                   {...field}
                                   placeholder={activity.name}
-                                  // disabled
+                                  className='w-64'
                                 />
                               </FormControl>
                               <FormMessage />
@@ -121,7 +179,6 @@ export const PlanForm = ({
                                 <Input
                                   {...field}
                                   placeholder={activity.weight}
-                                  className='w-32'
                                 />
                               </FormControl>
                               <FormMessage />
@@ -134,11 +191,7 @@ export const PlanForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder={activity.time}
-                                  className='w-32'
-                                />
+                                <Input {...field} placeholder={activity.time} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -150,17 +203,13 @@ export const PlanForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder={activity.reps}
-                                  className='w-32'
-                                />
+                                <Input {...field} placeholder={activity.reps} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                      </>
+                      </div>
                       <Button
                         variant='destructive'
                         type='button'
@@ -224,9 +273,11 @@ export const PlanForm = ({
   );
 };
 
-interface Plan {
+export interface Plan {
   name: string;
+  description: string;
   activities: Activity[];
+  tags: string[];
   isPublic: boolean;
 }
 

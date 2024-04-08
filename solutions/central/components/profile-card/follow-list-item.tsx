@@ -13,7 +13,7 @@ import { ProfileIcon } from '@/components/profile-icon';
 
 export const FollowListItem = (user: FollowListItemProps) => {
   const [isPending, startTransition] = useTransition();
-  const [actionType, setactionType] = useState(
+  const [actionType, setActionType] = useState(
     user.discover
       ? ActionType.FOLLOW
       : user.following
@@ -26,17 +26,17 @@ export const FollowListItem = (user: FollowListItemProps) => {
       switch (actionType) {
         case ActionType.FOLLOW:
           followProfile(user.profileId).then(() =>
-            setactionType(ActionType.UNFOLLOW),
+            setActionType(ActionType.UNFOLLOW),
           );
           break;
         case ActionType.UNFOLLOW:
           unfollowProfile(user.profileId).then(() =>
-            setactionType(ActionType.FOLLOW),
+            setActionType(ActionType.FOLLOW),
           );
           break;
         case ActionType.REMOVE:
           removeFollow(user.profileId).then(() =>
-            setactionType(ActionType.FOLLOW),
+            setActionType(ActionType.FOLLOW),
           );
       }
     });

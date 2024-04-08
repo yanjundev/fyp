@@ -55,8 +55,10 @@ export const ActivitySchema = z.object({
 
 export const PlanSchema = z.object({
   name: z.string().min(1, { message: 'your plan should have a name' }),
+  description: z.optional(z.string()),
   activities: z
     .array(ActivitySchema)
     .nonempty({ message: 'you have no activities :(' }),
+  tags: z.array(z.string()),
   isPublic: z.boolean(),
 });

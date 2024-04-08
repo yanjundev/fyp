@@ -4,9 +4,9 @@ import { Post } from '@prisma/client';
 
 import { PostCard } from '@/components/post/post-card';
 import { useEffect, useState } from 'react';
-import { getFeedPosts } from '@/actions/user/posts';
+import { feedPosts } from '@/actions/user/posts';
 
-const PostList = ({ data }: { data: Post[] }) => {
+export const PostList = ({ data }: { data: Post[] }) => {
   return (
     <div className='space-y-5'>
       {data.map((post) => (
@@ -19,7 +19,7 @@ export const PostFeed = () => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    getFeedPosts().then((data) => setPosts(data));
+    feedPosts().then((data) => setPosts(data));
   }, []);
 
   return (

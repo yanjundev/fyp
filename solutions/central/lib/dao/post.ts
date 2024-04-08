@@ -11,8 +11,10 @@ export const createPostForUser = async (
   planId?: string,
 ) => {
   try {
+    let post;
+
     if (planId) {
-      await db.post.create({
+      post = await db.post.create({
         data: {
           author: { connect: { id: profileId } },
           plan: { connect: { id: planId } },
@@ -25,7 +27,7 @@ export const createPostForUser = async (
       });
     }
 
-    await db.post.create({
+    post = await db.post.create({
       data: {
         author: { connect: { id: profileId } },
         title,
@@ -35,50 +37,55 @@ export const createPostForUser = async (
         public: isPublic,
       },
     });
+
+    return post;
   } catch (error) {
-    console.log(error);
+    console.log('error', error);
 
     return null;
   }
 };
 
 // for editing
-export const getPostById = async () => {};
-
-// for overview of all posts
-export const getPostsByProfile = async (id?: string) => {
+export const getPostById = async (id: string) => {
   try {
-    let profileId: string | undefined = id;
+    const post = await db.post.findUnique({
+      where: { id },
+      include: { plan: true },
+    });
 
-    if (id === undefined) {
-      profileId = (await getProfileId()) as string;
-    }
+    return post;
+  } catch {
+    return null;
+  }
+};
 
+/**
+ * returns all posts with the profile id
+ * @param profileId
+ */
+export const getPostsByProfile = async (profileId: string) => {
+  try {
     const posts = await db.post.findMany({
       where: { authorId: profileId },
       include: { plan: true },
       orderBy: { postDate: 'desc' },
     });
 
-    const user = await db.user.findFirst({
-      where: { profile: { id: profileId } },
+    return posts;
+  } catch {
+    return null;
+  }
+};
+
+export const getPostsByTag = async (tag: string) => {
+  try {
+    const posts = await db.post.findMany({
+      where: { tags: { has: tag }, public: true },
+      include: { plan: true, likedPosts: true },
     });
 
-    const mapped = posts.map((post) => {
-      return {
-        ...post,
-        author: user
-          ? {
-              image: user.image,
-              profileId,
-              name: user.name,
-              username: user.username,
-            }
-          : null,
-      };
-    });
-
-    return mapped;
+    return posts;
   } catch {
     return null;
   }
@@ -122,6 +129,42 @@ export const getPostsCount = async () => {
 
 // get all latest public posts
 export const getAllPosts = async () => {};
+
+export const updatePost = async (
+  id: string,
+  title: string,
+  body: string,
+  tags: string[],
+  isPublic: boolean,
+  planId: string | undefined,
+) => {
+  try {
+    if (planId) {
+      await db.post.update({
+        where: { id },
+        data: {
+          plan: { connect: { id: planId } },
+          title,
+          body,
+          tags,
+          public: isPublic,
+        },
+      });
+    }
+
+    await db.post.update({
+      where: { id },
+      data: {
+        title,
+        body,
+        tags,
+        public: isPublic,
+      },
+    });
+  } catch {
+    return null;
+  }
+};
 
 export const deletePost = async (id: string) => {
   try {

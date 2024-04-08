@@ -1,76 +1,88 @@
 'use client';
 
-import {
-  DotsVerticalIcon,
-  Pencil1Icon,
-  TrashIcon,
-} from '@radix-ui/react-icons';
+import { useEffect, useState } from 'react';
 
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardFooter,
   CardHeader,
-  CardTitle,
-} from '../ui/card';
+} from '@/components/ui/card';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { useEffect, useState } from 'react';
+import { Tag } from '@/components/ui/tag-input';
+
 import { checkPlanCreator } from '@/actions/user/plans';
+import { EditItem } from '../edit-item';
+import { useRouter } from 'next/navigation';
 
 export const PlanCard = ({
   id,
   name,
+  description,
+  activities,
+  tags,
   created,
   creatorId,
   handleEdit,
   handleDelete,
 }: PlanCardProps) => {
+  const router = useRouter();
+
   const [isCreator, setIsCreator] = useState(false);
 
   useEffect(() => {
-    console.log('plan check here');
-
     if (creatorId)
       checkPlanCreator(creatorId).then((data) => setIsCreator(data));
   }, []);
 
-  return (
-    <Card className='w-full'>
-      <CardHeader>
-        <CardTitle className='flex justify-between items-center'>
-          <p className='font-semibold'>{name}</p>
+  const handleClick = () => router.push(`/plans/view?planId=${id}`);
 
-          {isCreator && (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <DotsVerticalIcon />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleEdit && handleEdit(id)}>
-                  <Pencil1Icon className='mr-2 w-5 h-5 text-zinc-600' />
-                  edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='text-rose-600'
-                  onClick={() => handleDelete && handleDelete(id)}
-                >
-                  <TrashIcon className='mr-2 w-5 h-5' /> delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+  return (
+    <Card
+      className='flex flex-col justify-between cursor-pointer'
+      onClick={handleClick}
+    >
+      <CardHeader>
+        <div className='flex justify-between items-center'>
+          <p className='font-semibold text-lg'>{name}</p>
+
+          {isCreator && handleEdit && handleDelete && (
+            <EditItem
+              id={id}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+            />
           )}
-        </CardTitle>
-        <CardDescription>description?</CardDescription>
+        </div>
       </CardHeader>
-      <CardContent className='flex flex-col mt-5 space-y-5'>
-        <p>{created.toUTCString()}</p>
+      <CardContent>
+        <p className={`text-lg ${description ? '' : 'text-zinc-500'}`}>
+          {description ? description : 'no description set'}
+        </p>
       </CardContent>
+      <CardFooter className='flex flex-col justify-between items-start space-y-2'>
+        <p className='text-zinc-600'>
+          {typeof created === 'string'
+            ? new Date(created).toDateString().toLowerCase()
+            : created.toDateString().toLowerCase()}
+        </p>
+
+        <span className='flex flex-wrap'>
+          {tags.length !== 0
+            ? tags.map((tag) => {
+                return (
+                  <Tag
+                    key={tag}
+                    text={tag}
+                    type='plan'
+                    className='mr-1 cursor-pointer text-zinc-500'
+                    disabled
+                  />
+                );
+              })
+            : ''}
+        </span>
+      </CardFooter>
     </Card>
   );
 };
@@ -78,6 +90,9 @@ export const PlanCard = ({
 interface PlanCardProps {
   id: string;
   name: string;
+  description: string;
+  activities: string[];
+  tags: string[];
   created: Date;
   creatorId?: string;
   handleEdit?: (id: string) => void;

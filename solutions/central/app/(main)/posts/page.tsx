@@ -1,16 +1,21 @@
 'use client';
 
-import { getProfilePosts, removePost, updatePost } from '@/actions/user/posts';
+import { profilePosts, removePost } from '@/actions/user/posts';
 import { PostCard } from '@/components/post/post-card';
 import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 
 const Posts = () => {
+  const router = useRouter();
+
   const [isPending, startTransition] = useTransition();
 
   const { toast } = useToast();
 
   const [posts, setPosts] = useState([]);
+
+  const handleEdit = (id: string) => router.push(`posts/update?id=${id}`);
 
   const handleDelete = (id: string) => {
     removePost(id).then(() => {
@@ -21,7 +26,7 @@ const Posts = () => {
     });
   };
 
-  const updatePosts = () => getProfilePosts().then((p) => setPosts(p));
+  const updatePosts = () => profilePosts().then((p) => setPosts(p));
 
   useEffect(() => {
     startTransition(() => updatePosts());
@@ -32,12 +37,15 @@ const Posts = () => {
   ) : posts.length === 0 ? (
     'you have no posts'
   ) : (
-    <div className='container w-full flex-center'>
-      <div className='space-y-5'>
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} handleDelete={handleDelete} />
-        ))}
-      </div>
+    <div className='container flex flex-col space-y-5 flex-center'>
+      {posts.map((post) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ))}
     </div>
   );
 };

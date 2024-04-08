@@ -21,7 +21,8 @@ export const checkPlanCreator = async (creatorId: string) => {
     return null;
   }
 };
-export const userPlans = async (type?: 'simple') => {
+
+export const userPlans = async (type: 'full' | 'simple') => {
   try {
     const plans = await getPlans();
 
@@ -30,13 +31,14 @@ export const userPlans = async (type?: 'simple') => {
     }
 
     if (type === 'simple') {
-      const stripped = plans.map((p) => {
+      const filtered = plans.filter((p) => p.public);
+      const stripped = filtered.map((p) => {
         return { id: p.id, name: p.name };
       });
       return stripped;
     }
 
-    return plans;
+    if (type === 'full') return plans;
   } catch {
     return null;
   }
@@ -46,7 +48,7 @@ export const userPlan = async (id: string) => {
   try {
     const plan = await getPlanById(id);
 
-    return { ...plan, isPublic: plan?.public };
+    return { ...plan, isPublic: plan.public };
   } catch {
     return null;
   }
@@ -59,11 +61,11 @@ export const makePlan = async (values: z.infer<typeof PlanSchema>) => {
     return { error: 'invalid fields' };
   }
 
-  const { name, activities, isPublic } = values;
-  const createDate = new Date();
+  const { name, description, activities, tags, isPublic } = values;
+  const created = new Date();
 
   try {
-    await createPlan(name, activities, isPublic, createDate);
+    await createPlan(name, description, activities, tags, created, isPublic);
     return { success: 'yay' };
   } catch (error) {
     console.log('error', error);
@@ -82,14 +84,20 @@ export const editPlan = async (
     return { error: 'invalid fields' };
   }
 
-  const { name, activities, isPublic } = values;
+  const { name, description, activities, tags, isPublic } = values;
   const created = new Date();
 
   try {
-    await updatePlan(id, name, activities, created, isPublic);
-  } catch (error) {
-    console.log('error', error);
-
+    await updatePlan(
+      id,
+      name,
+      description,
+      activities,
+      tags,
+      created,
+      isPublic,
+    );
+  } catch {
     return null;
   }
 };

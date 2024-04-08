@@ -68,7 +68,7 @@ export const dailyCheckIn = async (id: string, experience: string) => {
   }
 };
 
-export const levelUp = async (profile: profile, exp: number) => {
+export const levelUp = async (profile: Profile, exp: number) => {
   try {
     // increment profile level
     const newLevel = (Number(profile.level) + 1).toString();
@@ -81,7 +81,7 @@ export const levelUp = async (profile: profile, exp: number) => {
   }
 };
 
-interface profile {
+interface Profile {
   threshold: string;
   id: string;
   userId: string;

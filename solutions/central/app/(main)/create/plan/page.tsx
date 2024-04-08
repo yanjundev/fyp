@@ -33,6 +33,7 @@ const Create = () => {
   const plan = {
     name: '',
     activities: [],
+    tags: [],
     isPublic: false,
   };
 

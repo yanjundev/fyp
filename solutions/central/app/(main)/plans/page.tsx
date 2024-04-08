@@ -26,25 +26,26 @@ const Plans = () => {
     });
   };
 
-  const updatePlans = () => userPlans().then((data) => setPlans(data));
+  const updatePlans = () => userPlans('full').then((data) => setPlans(data));
 
   useEffect(() => startTransition(() => updatePlans()), []);
 
   return isPending ? (
     'loading plans...'
-  ) : (
-    <div className='grid grid-cols-2 gap-5 p-5 md:grid-cols-3'>
-      {plans.length !== 0 &&
-        plans.map((p) => (
-          <PlanCard
-            key={p.id}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            transition={startTransition}
-            {...p}
-          />
-        ))}
+  ) : plans.length !== 0 ? (
+    <div className='container grid grid-cols-2 gap-5 p-5 md:grid-cols-3'>
+      {plans.map((plan) => (
+        <PlanCard
+          key={plan.id}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          transition={startTransition}
+          {...plan}
+        />
+      ))}
     </div>
+  ) : (
+    'you have no plans'
   );
 };
 

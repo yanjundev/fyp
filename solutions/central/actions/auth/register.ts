@@ -39,7 +39,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   const user = await getUserByEmail(email);
 
-  if (!user) return { error: 'something weng wrong' };
+  if (!user) return { error: 'something went wrong' };
 
   await createProfileForUser(user.id);
 
