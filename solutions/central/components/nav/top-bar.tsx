@@ -11,7 +11,11 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 
-import { AccountDropdown, BellDropdown } from '@/components/nav';
+import {
+  AccountDropdown,
+  BellDropdown,
+  CreateDropdown,
+} from '@/components/nav';
 
 import { cn } from '@/lib/utils';
 
@@ -50,7 +54,8 @@ export const Topbar = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className='flex justify-between items-center w-20'>
+        <div className='flex justify-between items-center w-32'>
+          <CreateDropdown />
           <BellDropdown />
           <AccountDropdown />
         </div>

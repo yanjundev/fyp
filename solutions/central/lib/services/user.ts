@@ -3,11 +3,12 @@ import { getCurrentUser } from '@/lib/session';
 import {
   getFollowsInfoByUserId,
   getProfile,
+  getProfileByUserId,
   updateExperience,
   updateLastCheckIn,
   updateLevelAndExp,
 } from '@/lib/dao/profile';
-import { getThresholdByLevel } from '@/lib/dao/level';
+import { createProfileForUser } from '@/lib/dao/user';
 
 const CHECK_IN_EXP = 15;
 
@@ -16,6 +17,12 @@ export const getUser = async () => {
     const user = await getCurrentUser();
 
     if (user) {
+      const profileCheck = await getProfileByUserId(user.id);
+
+      if (!profileCheck) {
+        await createProfileForUser(user.id);
+      }
+
       const profile = await getProfile();
 
       if (profile) {
@@ -61,7 +68,20 @@ export const dailyCheckIn = async (id: string, experience: string) => {
   }
 };
 
-interface profile {
+export const levelUp = async (profile: Profile, exp: number) => {
+  try {
+    // increment profile level
+    const newLevel = (Number(profile.level) + 1).toString();
+    // calculate leftover and return
+    const newExp = (exp - Number(profile.threshold)).toString();
+
+    await updateLevelAndExp(profile.id, newLevel, newExp);
+  } catch {
+    return null;
+  }
+};
+
+interface Profile {
   threshold: string;
   id: string;
   userId: string;
@@ -71,22 +91,3 @@ interface profile {
   lastCheckIn: Date | null;
   badgeIds: string[];
 }
-
-export const levelUp = async (profile: profile) => {
-  try {
-    // increment profile level
-    const newLevel = (Number(profile.level) + 1).toString();
-    // calculate leftover and return
-    const newExp = (
-      Number(profile.threshold) - Number(profile.experience)
-    ).toString();
-
-    await updateLevelAndExp(profile.id, newLevel, newExp);
-
-    const newThreshold = await getThresholdByLevel(newLevel);
-
-    return { level: newLevel, exp: newExp, threshold: newThreshold };
-  } catch {
-    return null;
-  }
-};

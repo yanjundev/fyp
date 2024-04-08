@@ -11,7 +11,7 @@ export const BellDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <BellIcon className='w-6 h-6 text-zinc-600' />
+        <BellIcon className='w-7 h-7 text-zinc-600' />
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-40' align='end'>
         <DropdownMenuItem>notif?</DropdownMenuItem>

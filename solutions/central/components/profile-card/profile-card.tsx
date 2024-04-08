@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 
 import { TbHexagonFilled } from 'react-icons/tb';
 
-import { getFollowing, getLevelInfo } from '@/actions/user/profile';
+import { getLevelInfo } from '@/actions/user/profile';
 
 import {
   Card,
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { UserInfo, SocialInfo, CheckInButton } from '@/components/home';
+import { UserInfo, SocialInfo, CheckInButton } from '@/components/profile-card';
 
 export const ProfileCard = () => {
   const [isPending, startTransition] = useTransition();
@@ -24,39 +24,31 @@ export const ProfileCard = () => {
   const [exp, setExp] = useState('');
   const [threshold, setThreshold] = useState('');
 
-  const [followers, setFollowers] = useState(0);
-  const [following, setFollowing] = useState(0);
+  const updateLevelInfo = () => {
+    getLevelInfo().then((info) => {
+      if (info) {
+        setName(info.username || info.name);
+        setLevel(info.level);
+        setExp(info.experience);
+        setThreshold(info.threshold);
+      }
+    });
+  };
 
   useEffect(() => {
-    startTransition(() => {
-      getLevelInfo().then((info) => {
-        if (info) {
-          setName(info.username || info.name);
-          setLevel(info.level);
-          setExp(info.experience);
-          setThreshold(info.threshold);
-        }
-      });
-
-      getFollowing().then((info) => {
-        if (info) {
-          setFollowers(info.followers);
-          setFollowing(info.following);
-        }
-      });
-    });
+    startTransition(() => updateLevelInfo());
   }, []);
 
   return (
-    <div className='flex fixed flex-col justify-center mx-auto space-y-5 w-full max-w-sm'>
+    <div className='flex relative flex-col justify-center mx-auto space-y-5 w-full max-w-sm'>
       <Card>
         <CardHeader>
           {isPending ? (
             <div className='flex items-center space-x-4'>
-              <Skeleton className='h-20 w-20 rounded-full' />
+              <Skeleton className='w-20 h-20 rounded-full' />
               <div className='space-y-2'>
-                <Skeleton className='h-5 w-56' />
-                <Skeleton className='h-5 w-56' />
+                <Skeleton className='w-56 h-5' />
+                <Skeleton className='w-56 h-5' />
               </div>
             </div>
           ) : (
@@ -75,7 +67,7 @@ export const ProfileCard = () => {
               <Skeleton className='h-4 w-[200px]' />
             </div>
           ) : (
-            <SocialInfo followers={followers} following={following} />
+            <SocialInfo />
           )}
 
           <Separator className='my-8' />
@@ -93,11 +85,7 @@ export const ProfileCard = () => {
           </div>
         </CardContent>
         <CardFooter>
-          <CheckInButton
-            updateLevel={setLevel}
-            updateExp={setExp}
-            updateThreshold={setThreshold}
-          />
+          <CheckInButton updateLevelInfo={updateLevelInfo} />
         </CardFooter>
       </Card>
     </div>
